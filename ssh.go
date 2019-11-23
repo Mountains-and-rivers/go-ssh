@@ -19,8 +19,8 @@ func main() {
 		"whoami",
 		"echo 'ssh output'",
 		"find /",
-		"exit",
-		"exit",
+		"exit", //退出切换后的用户
+		"exit",  //断开连接
 	}
 	// SSH client config
 	config := &ssh.ClientConfig{
@@ -52,14 +52,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Uncomment to store output in variable
+	// 把结果保存在变量中
 	var b bytes.Buffer
 	sess.Stdout = &b
 	sess.Stderr = &b
 
-	// Enable system stdout
-	// Comment these if you uncomment to store in variable
-
+	// 终端输出结果
 	//sess.Stdout = os.Stdout
 	//sess.Stderr = os.Stderr
 
@@ -84,6 +82,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Uncomment to store in variable
+	// 打印结果
 	fmt.Println(b.String())
 }
