@@ -10,8 +10,8 @@ import (
 func main() {
 
 	username := "moja"
-	password := "Wgl,.2019"
-	hostname := "47.111.77.29"
+	password := "xxxxxx"
+	hostname := "xx.xx.xx.xx"
 	port := "22"
 	commands := []string{
 		"sudo su",
