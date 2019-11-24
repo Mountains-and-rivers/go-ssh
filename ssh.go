@@ -5,35 +5,54 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"log"
+	"time"
 )
+
+type terminal struct {
+	username string
+	password string
+	hostname string
+	port     string
+}
 
 func main() {
 
-	username := "moja"
-	password := "xxxxxx"
-	hostname := "xx.xx.xx.xx"
-	port := "22"
-	commands := []string{
+	hostInfo := terminal{"moja", "Wgl,.2019", "47.111.77.29", "22"}
+	commandList := []string{
 		"sudo su",
 		//"sudo -i",
 		"whoami",
 		"echo 'ssh output'",
-		"find /",
 		"exit", //退出切换后的用户
-		"exit",  //断开连接
+		"exit", //断开连接
 	}
+
+	//获取执行结果
+	for {
+		r := result(hostInfo, commandList)
+		if *r == "" {
+			fmt.Println("--------执行失败 重来！---------")
+		} else {
+			fmt.Println(*r)
+			break
+		}
+	}
+}
+
+func result(hostInfo terminal, commands []string) *string {
 	// SSH client config
 	config := &ssh.ClientConfig{
-		User: username,
+		User: hostInfo.username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(password),
+			ssh.Password(hostInfo.password),
 		},
 		// Non-production only
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         30 * time.Second,
 	}
 
 	// Connect to host
-	client, err := ssh.Dial("tcp", hostname+":"+port, config)
+	client, err := ssh.Dial("tcp", hostInfo.hostname+":"+hostInfo.port, config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,7 +87,6 @@ func main() {
 	}
 
 	// send the commands
-
 	for _, cmd := range commands {
 		_, err = fmt.Fprintf(stdin, "%s\n", cmd)
 		if err != nil {
@@ -81,7 +99,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	// 打印结果
-	fmt.Println(b.String())
+	//fmt.Println(b.String())
+	ret := b.String()
+	return &ret
 }
